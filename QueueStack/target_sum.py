@@ -1,31 +1,76 @@
 class Solution:
     def findTargetSumWays(self, nums, S) -> int:
+        # node = (step, sum)
+        # 不需要visited 会超时
+        # nums中每多一个0，结果way = way * (zero_num**2)
+        temp = nums[:]
+        zero_sum = 0
         visited = set()
-        size = len(nums) - 1
+        # if zero_sum > 0:
+        #     nums = list(set(nums))
+        #     nums.remove(0)
+        for i, e in enumerate(temp):
+            if e == 0:
+                zero_sum += 1
+                # 不能用pop
+                nums.remove(0)
+
+        max = sum(nums)
+        if max == S or -max == S:
+            if zero_sum > 0:
+                return 2 ** zero_sum
+            else:
+                return 1
+
+        size = len(nums) - 1  # 4
 
         target = (size, S)
         way = 0
+        stack = [(-1, 0)]
+        # max_dict = {i: sum(nums[i:]) for i, e in enumerate(nums)}
+        # print(max_dict)
+        # 如果发现进行到某一步的时候后面的所有值相加加上当前的数都小于最终的结果那就跳过了
+        # 或者发现进行到某一步的时候减去后面所有的值都大于当前的结果
+        while stack:
+            current = stack.pop()
 
-        def find_way(current, target, visited, way, sum):
-            c_index, c_value = current
-            t_index, t_value = target
+            if current == target:
+                way += 1
+            if not current[0] < 0:
+                c_max = sum(nums[current[0]:])
+                if c_max and current[1] + c_max < S:
+                    continue
+                if c_max and current[1] - c_max > S:
+                    continue
+            for opt in (1, -1):
+                if current[0] + 1 > size:
+                    continue
+                neighbor_step = current[0] + 1
+                neighbor_sum = current[1] + opt * nums[current[0] + 1]
+                neighbor = (neighbor_step, neighbor_sum)
+                print(neighbor)
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    if neighbor[1] == S:
+                        way += 1
+                    stack.append(neighbor)
 
-            if c_index + 1 > size:
-                return
-            # next = {"index": current["index"] + 1, "value": nums[current["index"] + 1]}
-            next = (c_index + 1, nums[c_index + 1])
-            for i in (1, -1):
-                sum = c_value + nums[c_index + 1] * i
-                if c_index == t_index and sum == t_value:
-                    way += 1
-                if (c_index, sum) not in visited:
-                    visited.add(next)
-                    find_way(next, target, visited, way, sum)
+        if zero_sum > 0:
+            way = way * (2 ** zero_sum)
+        return way
 
-        find_way((-1, 0), target, visited, way, sum=0)
-        print(way)
+    def solve1(self, nums, S):
+        d = {}
+        length = len(nums)
+
+        def dfs(i, cur, d):
+            if i < length and (i, cur) not in d:  # 搜索周围节点
+                d[(i, cur)] = dfs(i + 1, cur + nums[i], d) + dfs(i + 1, cur - nums[i], d)
+            return d.get((i, cur), int(cur == S))
+
+        return dfs(0, 0, d)
 
 
 if __name__ == '__main__':
     s = Solution()
-    s.findTargetSumWays([1, 1, 1, 1, 1], 3)
+    print(s.findTargetSumWays([1, 1, 1, 1, 1], 3))
