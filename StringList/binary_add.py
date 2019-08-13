@@ -21,8 +21,11 @@ class Solution:
 
         return sum_str(v) if v else "0"
 
+    def other(self, a, b):
+        return str(bin(int(a, 2) + int(b, 2)))[2:]
+
 
 if __name__ == '__main__':
     s = Solution()
-    r = s.addBinary("0", "0")
+    r = s.other("101", "0")
     print(r)
