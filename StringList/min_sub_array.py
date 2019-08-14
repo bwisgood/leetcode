@@ -1,24 +1,17 @@
 class Solution:
     def minSubArrayLen(self, s: int, nums: list) -> int:
-        # 超时
-        l = len(nums)
-
-        if not nums:
-            return 0
-
-        min_ = 0
-        for i in range(l):
-            k = 0
-            sum_ = 0
-            for j in range(i, l):
-                sum_ += nums[j]
+        import sys
+        MAX_INT = sys.maxsize
+        k = 0
+        sum_ = 0
+        min_ = MAX_INT
+        for i in range(len(nums)):
+            sum_ += nums[i]
+            while sum_ >= s:
+                min_ = min(min_, i - k + 1)
+                sum_ -= nums[k]
                 k += 1
-                if sum_ >= s:
-                    if min_ == 0:
-                        min_ = k
-                    else:
-                        min_ = min(k, min_)
-        return min_
+        return min_ if min_ != MAX_INT else 0
 
 
 if __name__ == '__main__':
