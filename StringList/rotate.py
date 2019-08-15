@@ -30,11 +30,9 @@ class Solution:
             while True:
                 nums[temp], pre = pre, nums[temp]
                 temp = (temp + k) % l
-
                 step += 1
                 if temp == i:
                     break
-
             nums[i] = pre
             step += 1
         print(nums)
