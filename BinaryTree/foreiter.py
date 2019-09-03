@@ -22,3 +22,12 @@ class Solution:
                 if c.left is not None:
                     stack.append(c.left)
         return nodes
+
+    def preorderTraversal1(self, root: TreeNode) -> list:
+        nl = []
+        if not root:
+            return []
+        nl.append(root.val)
+        nl += self.preorderTraversal1(root.left)
+        nl += self.preorderTraversal1(root.right)
+        return nl
